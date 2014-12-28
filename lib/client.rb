@@ -5,7 +5,7 @@ module Iris
     class Client
       include Celluloid::IO
       include Celluloid::Logger
-      finalizer :disconect
+      finalizer :disconnect
       
       CLIENT_ID_PREFIX = "iris"
       
@@ -71,7 +71,7 @@ module Iris
         (!@socket.nil?) && (!@socket.closed?)
       end
       
-      def disconect(send_msg=true)
+      def disconnect(send_msg=true)
         if send_msg
           packet = Iris::MQTT::Message::Disconnect.new
           send_packet(packet)
