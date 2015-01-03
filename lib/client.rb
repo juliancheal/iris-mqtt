@@ -14,7 +14,7 @@ module Iris
       def initialize(args)
         @clean_session = true
         @packet_id = 0
-        @socket = TCPSocket.new("127.0.0.1", "1883")
+        @socket = Iris::MQTT::Shocket.new("127.0.0.1", "1883")
       end
       
       def self.connect(*args, &block)
@@ -52,6 +52,16 @@ module Iris
         send_packet(packet)
       end
       
+      def subscribe(topics)
+        packet = Iris::MQTT::Message::Subscribe.new(@packet_id.next,
+                                                    topics)
+        send_packet(packet)
+      end
+      
+      def get
+        @socket.async.read
+      end
+      
       private
 
       def receive_connack
@@ -60,7 +70,7 @@ module Iris
       def send_packet(data)
         packets = data.write
         info "Sending Packet #{packets}"
-        @socket.write(packets)
+        @socket.async.write(packets)
       end
       
       def generate_client_id
