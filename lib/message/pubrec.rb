@@ -1,13 +1,13 @@
 module Iris
   module MQTT
     module Message
-      class Disconnect < Packet
+      class Pubrec < Packet
 
         def initialize(flags)
         end
         
         def type
-          MessageType::DISCONNECT
+          MessageType::PUBREC
         end
         
       end

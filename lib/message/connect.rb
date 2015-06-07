@@ -73,6 +73,9 @@ module Iris
           return body
         end
         
+        def parse(data)
+        end
+        
       end
     end
   end
