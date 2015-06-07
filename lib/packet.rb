@@ -1,30 +1,47 @@
 module Iris
   module MQTT
     class Packet
-      
+
       attr_accessor :version, :id, :body_length
-      
-      def initialize(args={})
+
+      def initialize(options={})
       end
-      
+
       def fixed_header
         header = [message_type]
       end
-      
+
       def message_type
-        ((self.type & Protocol::CMD_MASK) << Protocol::CMD_SHIFT)
+        self.type << Protocol::CMD_SHIFT
       end
-      
+
       def variable_header
         ""
       end
-      
+
       def payload
       end
-      
-      def decode
+
+      def parse(data)
       end
-      
+
+      def self.read(data)
+        message = create_message_from_header(read_byte(data))
+        message.parse(data)
+      end
+
+      def self.create_message_from_header(byte)
+        type = ((byte & Protocol::CMD_MASK) >> Protocol::CMD_SHIFT)
+        packet_class = Utilty.constantize("#{MessageType.by_value(type)}")
+
+        # Create a new packet object
+        packet_class.new({})
+      end
+
+      def self.read_byte(byte)
+        byte.unpack(Protocol::UINT8).first
+      end
+
       def write
         header = fixed_header
         # Call current Message's variable header
@@ -39,9 +56,9 @@ module Iris
         header = set_remaining_size(body_length,header)
 
         # Convert header to binary and add on body
-        header.pack('C*') + body
+        header.pack(Protocol::UINT8STAR) + body
       end
-      
+
       def set_remaining_size(body_length,header)
         begin
           digit = (body_length % 128)
@@ -55,12 +72,12 @@ module Iris
       def encode_bytes(*bytes)
         bytes.pack('C*')
       end
-      
+
       # Encode a 16-bit unsigned integer and return it
       def encode_short(val)
         [val.to_i].pack('n')
       end
-      
+
       # Encode a UTF-8 string and return it
       # (preceded by the length of the string)
       def encode_string(str)
@@ -70,7 +87,7 @@ module Iris
         str.force_encoding('ASCII-8BIT')
         encode_short(str.bytesize) + str
       end
-      
+
     end
   end
 end

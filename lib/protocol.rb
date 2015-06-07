@@ -47,6 +47,10 @@ module Iris
     	SUBSCRIBE_SUCCESS_EXACTLY_ONCE = EXACTLY_ONCE
     	SUBSCRIBE_FAILURE = 0x80
     	
+    	# Binary Packing/Unpacking # http://bit.ly/1vPz1pl
+    	UINT8 = 'C' # 8-bit unsigned integer
+    	UINT8STAR = 'C*' # * (un)packs all remaining bytes
+    	
     end
   end
 end

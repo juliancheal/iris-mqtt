@@ -17,6 +17,11 @@ module Iris
       PINGRESP    = 13 # PING Response
       DISCONNECT  = 14 # Client is Disconnecting
       #RESERVED    = 15 # Reserved
+      
+      def self.by_value(val)
+        constants.find{ |name| const_get(name)==val }
+      end
+      
     end
   end
 end
