@@ -1,6 +1,7 @@
 # IrisMQTT
 
 TODO: Write a gem description
+http://www.hivemq.com/mqtt-essentials-part-4-mqtt-publish-subscribe-unsubscribe/
 
 ## Installation
 
