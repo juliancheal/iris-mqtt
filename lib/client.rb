@@ -3,7 +3,7 @@ require 'celluloid/io'
 module Iris
   module MQTT
     class Client
-      include Celluloid::IO
+      include Celluloid::IO, Celluloid::Notifications
       include Celluloid::Logger
       finalizer :disconnect
 
@@ -11,7 +11,7 @@ module Iris
 
       attr_accessor :client_id, :clean_session
 
-      def initialize(args)
+      def initialize(args="")
         @clean_session = true
         @packet_id = 0
         @socket = Iris::MQTT::Shocket.new("127.0.0.1", "1883")
@@ -51,13 +51,24 @@ module Iris
         send_packet(packet)
       end
 
-      def subscribe(topics)
+      def subscribes(topics)
         packet = Iris::MQTT::Message::Subscribe.new(@packet_id.next,
                                                     topics)
         send_packet(packet)
       end
 
-      def get
+      execute_block_on_receiver :subscription
+
+      def subscription(topic, &block)
+        @subscribe_callback = block
+        subscribe(topic, :on_message)
+      end
+
+      def on_message(*args)
+        @subscribe_callback.call(args)
+      end
+
+      def read
         @socket.async.read
       end
 

@@ -1,27 +1,25 @@
 require 'celluloid/io'
+require "celluloid/autostart"
 
 module Iris
   module MQTT
     class Shocket
-      include Celluloid::IO
+      include Celluloid, Celluloid::IO, Celluloid::Notifications
         finalizer :shutdown
 
       def initialize(host,port)
         @socket = TCPSocket.new(host,port)
-        # async.read
       end
 
       def read
         loop do
           data = @socket.read
-          process_data(data)
+          publish("greeting", process_data(data))
         end
       end
 
       def process_data(data)
         packet = Iris::MQTT::Packet.read(data)
-        # puts "packet: #{packet}"
-        # puts data.inspect
       end
 
       def write(msg)
