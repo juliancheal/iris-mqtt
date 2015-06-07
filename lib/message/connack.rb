@@ -6,18 +6,17 @@ module Iris
         def initialize(flags)
           @connack_flags = [false, false, false, false, false, false, false, false]
         end
-        
+
         def type
           MessageType::CONNACK
         end
-        
+
         def parse(data)
           shift_byte(data)
           shift_byte(data)
           @return_code = shift_byte(data)
-          puts "return code #{return_msg}"
         end
-        
+
         def return_msg
           case @return_code
             when 0x00
@@ -36,12 +35,12 @@ module Iris
               "Connection refused: error code #{return_code}"
           end
         end
-        
+
         # Remove one byte from the front of the string
         def shift_byte(buffer)
           buffer.slice!(0...1).unpack('C').first
         end
-        
+
       end
     end
   end

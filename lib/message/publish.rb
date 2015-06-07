@@ -56,8 +56,6 @@ module Iris
           topic = shift_string(buffer)
           id = shift_short(buffer) unless qos == 0
           payload = buffer
-
-          puts "topic: #{topic}, payload: #{payload}"
         end
 
         # Remove a 16-bit unsigned integer from the front of buffer
