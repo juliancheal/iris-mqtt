@@ -55,7 +55,7 @@ module Iris
         def parse_body(buffer)
           topic = shift_string(buffer)
           id = shift_short(buffer) unless qos == 0
-          payload = buffer
+          Payload.new(topic, buffer)
         end
 
         # Remove a 16-bit unsigned integer from the front of buffer

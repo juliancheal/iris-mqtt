@@ -1,19 +1,18 @@
-require 'celluloid/io'
-
 module Iris
   module MQTT
     class Client
-      include Celluloid::IO, Celluloid::Notifications
-      include Celluloid::Logger
-      finalizer :disconnect
+      # include Celluloid::IO, Celluloid::Notifications
+      # include Celluloid::Logger
+      # finalizer :disconnect
 
       CLIENT_ID_PREFIX = "iris"
 
-      attr_accessor :client_id, :clean_session
+      attr_accessor :client_id, :clean_session, :topics
 
       def initialize(args="")
         @clean_session = true
         @packet_id = 0
+        @topics = []
         @socket = Iris::MQTT::Shocket.new("127.0.0.1", "1883")
       end
 
@@ -51,32 +50,26 @@ module Iris
         send_packet(packet)
       end
 
-      def subscribes(topics)
+      def subscribe(topics)
+        @topics << topics
         packet = Iris::MQTT::Message::Subscribe.new(@packet_id.next,
                                                     topics)
         send_packet(packet)
       end
 
-      execute_block_on_receiver :subscription
+      def start
+        @socket.async.read
+      end
 
       def subscription(topic, &block)
-        @subscribe_callback = block
-        subscribe(topic, :on_message)
-      end
-
-      def on_message(*args)
-        @subscribe_callback.call(args)
-      end
-
-      def read
-        @socket.async.read
+        obs = Iris::MQTT::Observer.new
+        obs.subscriber(topic,&block)
       end
 
       private
 
       def send_packet(data)
         packets = data.write
-        # info "Sending Packet #{packets}"
         @socket.async.write(packets)
       end
 

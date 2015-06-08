@@ -7,14 +7,17 @@ module Iris
       include Celluloid, Celluloid::IO, Celluloid::Notifications
         finalizer :shutdown
 
-      def initialize(host,port)
+      def initialize(host="127.0.0.1",port="1883")
         @socket = TCPSocket.new(host,port)
       end
 
       def read
         loop do
           data = @socket.read
-          publish("greeting", process_data(data))
+          daata = process_data(data)
+          topic = daata.topic rescue ""
+          payload = daata.payload rescue ""
+          publish(topic, payload)
         end
       end
 

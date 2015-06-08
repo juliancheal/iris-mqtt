@@ -3,18 +3,19 @@ module Iris
     module Message
       class Suback < Packet
 
-        attr_accessor :return_codes
-        
+        attr_accessor :return_codes, :topic
+
         def initialize(options={})
           default_options = {return_codes: []}
           options = default_options.merge(options)
+          @topic = topic
           @return_codes = options[:return_codes]
         end
-        
+
         def type
           MessageType::SUBACK
         end
-        
+
         def parse(data)
           length = data.length;
           position = 0
@@ -28,10 +29,10 @@ module Iris
             multiplier *= 0x80
             position += 1
           end while ((digit & 0x80) != 0x00) and position <= 4
-          
+
           parse_body(data)
         end
-        
+
         # Parse the body (variable header and payload) of a packet
         def parse_body(buffer)
           @id = shift_short(buffer)
@@ -40,7 +41,7 @@ module Iris
           end
           # puts "subacks #{@return_codes.inspect}"
         end
-        
+
         # Remove a 16-bit unsigned integer from the front of buffer
         def shift_short(buffer)
           bytes = buffer.slice!(0..1)
@@ -69,7 +70,7 @@ module Iris
           # Strings in MQTT v3.1 are all UTF-8
           str.force_encoding('UTF-8')
         end
-        
+
       end
     end
   end

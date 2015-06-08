@@ -4,7 +4,7 @@ require "client"
 module Iris
   module MQTT
     class Superviser < Celluloid::SupervisionGroup
-      supervise Iris::MQTT::Client, as: :client
+      supervise Iris::MQTT::Shocket, as: :socket
     end
   end
 end
