@@ -3,6 +3,8 @@
 TODO: Write a gem description
 http://www.hivemq.com/mqtt-essentials-part-4-mqtt-publish-subscribe-unsubscribe/
 
+This gem is based on the work by Ruby-MQTT https://github.com/njh/ruby-mqtt
+
 ## Installation
 
 Add this line to your application's Gemfile:
